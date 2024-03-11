@@ -7,9 +7,9 @@ class Mywindow(QMainWindow):
         super(Mywindow, self).__init__()
         self.setGeometry(200, 200, 300, 300)
         self.setWindowTitle("window")
-        self.lbl()
+        self.initUI()
     
-    def lbl(self):
+    def initUI(self):
         self.lable = QtWidgets.QLabel(self)
         self.lable.setText("Click me for pop-up")
         self.lable.adjustSize()
