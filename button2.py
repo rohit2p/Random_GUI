@@ -35,4 +35,5 @@ def window():
     sys.exit(app.exec_())
 
 
-window()
+if __name__ == "__main__":
+    window()
