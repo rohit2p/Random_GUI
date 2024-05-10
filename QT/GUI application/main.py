@@ -5,7 +5,9 @@ from PyQt5.QtGui import QPixmap, QCursor
 
 wedgets = {
     'logo': [],
-    'button': []
+    'button': [],
+    'score': [],
+    'question':[]
 }
 
 app = QApplication(sys.argv)
@@ -41,7 +43,40 @@ def frame1():
     grid.addWidget(wedgets["logo"][-1], 0, 0)
     grid.addWidget(wedgets["button"][-1], 1, 0)
 
-frame1()
+# frame1()
+
+def frame2():
+    score = QLabel()
+    score.setAlignment(QtCore.Qt.AlignRight)
+    wedgets["score"].append(score)
+    score.setStyleSheet(
+        "font-size: 35px;" +
+        "color: 'white';" +
+        "padding: 15px 10px 10px 10px;" +
+        "margin: 20px 200px;" +
+        "background: '#64a314';" +
+        "border: 1px solid '#64a314';" +
+        "border-radius: 30px;"
+    )
+
+    question = QLabel("This is the question??")
+    question.setAlignment(QtCore.Qt.AlignCenter)
+    wedgets["question"].append(question)
+    question.setStyleSheet(
+        "font-size: 25px;" +
+        "color: 'white';" +
+        "padding: 75px;"
+    )
+
+    grid.addWidget(wedgets["score"][-1], 0, 1)
+    grid.addWidget(wedgets["question"][-1], 1, 0, 1, 2)
+
+
+
+frame2()
+
+
+
 
 window.setLayout(grid)
 
