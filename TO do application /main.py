@@ -1,10 +1,8 @@
+import sqlite3
 from PyQt5.QtWidgets import QWidget, QApplication, QListWidgetItem
 from PyQt5 import QtCore
 from PyQt5.uic import loadUi
 import sys
-
-tasks = ["work on project", "watch tutorial", "go to birthday"]
-
 
 class Window(QWidget):
     def __init__(self):
@@ -18,11 +16,17 @@ class Window(QWidget):
         print("selected date: ", dateSelected)
 
     def updateTaskList(self):
-        for task in tasks:
-            item = QListWidgetItem(task)
-            item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
-            item.setCheckState(QtCore.Qt.Unchecked)
-            self.taskslistWidget.addItem(item)
+        # for task in tasks:
+        #     item = QListWidgetItem(task)
+        #     item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
+        #     item.setCheckState(QtCore.Qt.Unchecked)
+        #     self.taskslistWidget.addItem(item)
+        db = sqlite3.connect("data.db")
+        cursor = db.cursor()
+
+        query = "SELECT task, completed FROM tasks WHERE date = ?"
+        row = (date,)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
