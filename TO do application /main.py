@@ -25,7 +25,7 @@ class Window(QWidget):
         cursor = db.cursor()
 
         query = "SELECT task, completed FROM tasks WHERE date = ?"
-        row = ()
+        row = (data)
 
 
 if __name__ == "__main__":
