@@ -1,71 +1,70 @@
 import sys
-import re
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLineEdit, QPushButton, QListWidget, QLabel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QInputDialog
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 
-class RegexFilterApp(QWidget):
+class DraggableLegendPlot(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.initUI()
+        self.setWindowTitle('Draggable Legend Plot with Editable Text')
+        self.setGeometry(100, 100, 800, 600)
 
-    def initUI(self):
-        layout = QVBoxLayout()
+        # Create the main widget and layout
+        self.main_widget = QWidget(self)
+        self.setCentralWidget(self.main_widget)
+        layout = QVBoxLayout(self.main_widget)
 
-        # Operation input
-        self.operation_input = QLineEdit(self)
-        self.operation_input.setPlaceholderText("Enter operation (e.g., name) and press Enter")
-        layout.addWidget(self.operation_input)
+        # Create the Matplotlib figure and axes
+        self.fig = Figure()
+        self.ax = self.fig.add_subplot(111)
 
-        # List widget to display operations
-        self.operations_list = QListWidget(self)
-        layout.addWidget(self.operations_list)
+        # Create the FigureCanvas widget
+        self.canvas = FigureCanvas(self.fig)
+        layout.addWidget(self.canvas)
 
-        # Regex input
-        self.regex_input = QLineEdit(self)
-        self.regex_input.setPlaceholderText("Enter regex pattern")
-        layout.addWidget(self.regex_input)
+        # Plot some data
+        self.plot_data()
 
-        # Apply button
-        self.apply_button = QPushButton('Apply', self)
-        self.apply_button.clicked.connect(self.apply_regex_filter)
-        layout.addWidget(self.apply_button)
+        # Connect the legend to be draggable and clickable
+        self.draggable_legend = None
+        self.connect_legend()
 
-        # Filtered operations display
-        self.filtered_list = QListWidget(self)
-        layout.addWidget(self.filtered_list)
+    def plot_data(self):
+        # Plot some example data
+        self.ax.plot([0, 1, 2], [0, 1, 4], label='Quadratic')
+        self.ax.plot([0, 1, 2], [0, 2, 3], label='Linear')
+        self.ax.legend()
 
-        self.setLayout(layout)
-        self.setWindowTitle('Regex Filter Application')
+    def connect_legend(self):
+        # Make the legend draggable
+        self.legend = self.ax.legend()
+        self.legend.set_draggable(True)
 
-        # Connect the operation input to add items to the operations list
-        self.operation_input.returnPressed.connect(self.add_operation)
+        # Connect the mouse press event
+        self.canvas.mpl_connect('button_press_event', self.on_legend_click)
 
-    def add_operation(self):
-        operation = self.operation_input.text()
-        if operation:
-            self.operations_list.addItem(operation)
-            self.operation_input.clear()
-
-    def apply_regex_filter(self):
-        regex_pattern = self.regex_input.text()
-        self.filtered_list.clear()
-
-        try:
-            pattern = re.compile(regex_pattern)
-        except re.error:
-            self.filtered_list.addItem("Invalid regex pattern")
+    def on_legend_click(self, event):
+        # Check if the mouse click is within the legend
+        if self.legend is None:
             return
 
-        for index in range(self.operations_list.count()):
-            operation = self.operations_list.item(index).text()
-            if pattern.search(operation):
-                self.filtered_list.addItem(operation)
+        if self.legend.get_frame().contains(event)[0]:
+            # Prompt user to update legend text
+            items = [text.get_text() for text in self.legend.get_texts()]
+            item, ok = QInputDialog.getItem(self, "Edit Legend Text", "Select item to edit:", items, 0, False)
 
-def main():
-    app = QApplication(sys.argv)
-    ex = RegexFilterApp()
-    ex.show()
-    sys.exit(app.exec_())
+            if ok and item:
+                new_text, ok = QInputDialog.getText(self, "Edit Legend Text", "Enter new text:", text=item)
+                if ok:
+                    # Update the legend text
+                    for text in self.legend.get_texts():
+                        if text.get_text() == item:
+                            text.set_text(new_text)
+                    self.canvas.draw_idle()
 
 if __name__ == '__main__':
-    main()
+    app = QApplication(sys.argv)
+    window = DraggableLegendPlot()
+    window.show()
+    sys.exit(app.exec_())
