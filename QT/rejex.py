@@ -16,7 +16,7 @@ class DraggableLegendPlot(QMainWindow):
         layout = QVBoxLayout(self.main_widget)
 
         # Create the Matplotlib figure and axes
-        self.fig = Figure()
+        self.fig = Figure()d
         self.ax = self.fig.add_subplot(111)
 
         # Create the FigureCanvas widget
